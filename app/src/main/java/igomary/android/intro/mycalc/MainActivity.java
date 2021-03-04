@@ -1,8 +1,8 @@
 package igomary.android.intro.mycalc;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,37 +13,49 @@ public class MainActivity extends AppCompatActivity {
     private final int[] mNumButtons =
             {R.id.button_0, R.id.button_1, R.id.button_2, R.id.button_3, R.id.button_4, R.id.button_5, R.id.button_6, R.id.button_7, R.id.button_8, R.id.button_9};
     private TextView mTextView;
-    private boolean mLastNumeric; //флаг введено ли последним число
-    private boolean mLastDot;       //ставили ли точку в числе
-    private boolean mIsCounted;        //выполняли ли какие-либо операции
-    private double mFirstNum;
-    private double mSecondNum;
-    private double mResult;
-    private int mOperation; // 0 - сложение, 1- вычитание, 2 - умножение, 3 - деление
-    private final String PLUS = "Plus"; // все что ниже - для дебага
-    private final String RESULT = "Result";
-    private final String NUMERO = "Ввели число";
+    private final String PLUS = "Plus";
+    private final static String keyCalculator = "Calculator";
+    private Calculator calculator = new Calculator();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mIsCounted = false;
-        mLastDot = false;
         mTextView = findViewById(R.id.textView);
+        if (savedInstanceState != null) {
+            calculator = savedInstanceState.getParcelable(keyCalculator);
+            mTextView.setText(calculator.getText());
+        }
+        Log.e(keyCalculator, ""+savedInstanceState);
+
+
         setNumericOnClickListener();
         setNonNumericOnClickListener();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle instanceState) {
+        super.onSaveInstanceState(instanceState);
+        instanceState.putParcelable(keyCalculator,calculator);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle instanceState) {
+        super.onRestoreInstanceState(instanceState);
+        calculator = instanceState.getParcelable(keyCalculator);
     }
 
     private void setNumericOnClickListener() {
         View.OnClickListener listener = view -> {
             Button button = (Button) view;
-            if (mLastNumeric) {
+            if (calculator.ismLastNumeric()) {
                 mTextView.append(button.getText());
             } else {
                 mTextView.setText(button.getText());
             }
-            mLastNumeric = true;
+            calculator.setmLastNumeric(true);
+            calculator.setmErr(false);
+            calculator.setText(mTextView.getText().toString());
         };
         for (int id : mNumButtons) {
             findViewById(id).setOnClickListener(listener);
@@ -53,59 +65,58 @@ public class MainActivity extends AppCompatActivity {
     private void setNonNumericOnClickListener() {
         findViewById(R.id.button_plus).setOnClickListener(v -> {
             Log.e(PLUS, "плюс нажали");
-           if (!mIsCounted) {
-               readFirst();
-               mIsCounted = true;
-           } else{
-               readSecond();
-               count();
-           }
-            mOperation = 0;
-            zeroDotAndNumeric();
+            if (!calculator.ismIsCounted()) {
+                Log.e(PLUS, "isCounted = false");
+                readFirst();
+            } else {
+                readSecond();
+                count();
+            }
+            calculator.setmOperation(0);
         });
 
         findViewById(R.id.button_minus).setOnClickListener(v -> {
-            if (!mIsCounted) {
-                readFirst();
-                mIsCounted = true;
-            } else {
-                readSecond();
-                count();
+            if (!calculator.ismErr()) {
+                if (!calculator.ismIsCounted()) {
+                    Log.e(PLUS, "isCounted = false");
+                    readFirst();
+                } else {
+                    readSecond();
+                    count();
+                }
+                calculator.setmOperation(1);
             }
-            mOperation = 1;
-            zeroDotAndNumeric();
         });
 
         findViewById(R.id.button_mult).setOnClickListener(v -> {
-            if (!mIsCounted) {
-                readFirst();
-                mIsCounted = true;
-            } else {
-                readSecond();
-                count();
+            if (!calculator.ismErr()) {
+                if (!calculator.ismIsCounted()) {
+                    Log.e(PLUS, "isCounted = false");
+                    readFirst();
+                } else {
+                    readSecond();
+                    count();
+                }
+                calculator.setmOperation(2);
             }
-            mOperation = 2;
-            zeroDotAndNumeric();
         });
 
         findViewById(R.id.button_dev).setOnClickListener(v -> {
-            if (!mLastNumeric) {
-                return;
+            if (!calculator.ismErr()) {
+                if (!calculator.ismIsCounted()) {
+                    Log.e(PLUS, "isCounted = false");
+                    readFirst();
+                } else {
+                    readSecond();
+                    count();
+                }
+                calculator.setmOperation(3);
             }
-            if (!mIsCounted) {
-                readFirst();
-                mIsCounted = true;
-            } else {
-                readSecond();
-                count();
-            }
-            mOperation = 3;
-            zeroDotAndNumeric();
         });
 
         findViewById(R.id.button_point).setOnClickListener(v -> {
-            if (mLastNumeric && !mLastDot) {
-                mLastDot = true;
+            if (calculator.ismLastNumeric()&& !calculator.ismLastDot()) {
+                calculator.setmLastDot(true);
                 mTextView.append(".");
             }
         });
@@ -115,74 +126,38 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.button_equal).setOnClickListener(v -> {
-            if (!mLastNumeric) {
+            if (!calculator.ismLastNumeric()) {
                 return;
             }
             readSecond();
             count();
-            mIsCounted = false;
+            calculator.setmIsCounted(false);
         });
 
     }
 
     private void count() {
-        mIsCounted = false;
-        switch (mOperation) {
-            case 0:
-                Log.e(NUMERO, "складываем "+Double.toString(mFirstNum));
-                mResult = mFirstNum + mSecondNum;
-                break;
-            case 1:
-                mResult = mFirstNum - mSecondNum;
-                break;
-            case 2:
-                mResult = mFirstNum * mSecondNum;
-                break;
-            case 3:
-                if (Double.compare(mSecondNum,0.0)==0) {
-                    devZeroErr();
-                    return;
-                }
-                mResult = mFirstNum / mSecondNum;
-                break;
-        }
-        Log.e(RESULT, "результат: " + Double.toString(mResult));
-        String string;
-        if (mResult % 1 == 0) {
-            string = Integer.toString((int) mResult);
-        } else {
-            string = Double.toString(mResult);
-        }
-        Log.e(RESULT, "результат после обработки: " + string);
-        mTextView.setText(string);
+        mTextView.setText(calculator.count());
         readFirst();
     }
 
     private void readFirst() {
-        mFirstNum = Double.parseDouble(mTextView.getText().toString());
-        Log.e(NUMERO, "first: "+Double.toString(mFirstNum));
-        mIsCounted = true;
+        if (!calculator.ismErr()) {
+            calculator.setmFirstNum(Double.parseDouble(mTextView.getText().toString()));
+            calculator.setmIsCounted(true);
+        }
     }
 
     private void readSecond() {
-        mSecondNum = Double.parseDouble(mTextView.getText().toString());
-        Log.e(NUMERO, "second: "+Double.toString(mSecondNum));
+        calculator.setmErr(false);
+        calculator.setmSecondNum(Double.parseDouble(mTextView.getText().toString()));
     }
 
     private void clear() {
+        calculator.setmErr(false);
+        calculator.setmIsCounted(false);
         mTextView.setText("");
+        calculator.setText("");
     }
-
-    private void devZeroErr() {
-        mTextView.setText("Деление на 0");
-        mLastNumeric = false;
-        mIsCounted = false;
-    }
-
-    private void zeroDotAndNumeric() {
-        mLastDot = false;
-        mLastNumeric = false;
-    }
-
 
 }
