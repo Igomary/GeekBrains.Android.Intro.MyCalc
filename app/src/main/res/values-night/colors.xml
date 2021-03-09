@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="btnTxtColor">@android:color/black</color>
+    <color name="textViewBGColor">@android:color/black</color>
+    <color name="textViewTextColor">@android:color/white</color>
+</resources>

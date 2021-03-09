@@ -2,8 +2,11 @@
 <resources>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="wood">#DAA06D </color>
-    <color name="wood_2">#CD7F32</color>
+    <color name="wood">#E4AD7B</color>
+    <color name="wood_2">#CC7825</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="btnTxtColor">@android:color/white</color>
+    <color name="textViewBGColor">@android:color/white</color>
+    <color name="textViewTextColor">@color/wood_2</color>
 </resources>
