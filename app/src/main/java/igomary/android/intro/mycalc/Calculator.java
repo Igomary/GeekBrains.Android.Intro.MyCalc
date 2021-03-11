@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-
 public class Calculator implements Parcelable {
     private boolean mLastNumeric; //флаг введено ли последним число
     private boolean mLastDot;       //ставили ли точку в числе
