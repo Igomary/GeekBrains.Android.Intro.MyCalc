@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyCalc</string>
+    <string name="app_name">MyCalculator</string>
     <string name="button1">1</string>
     <string name="button2">2</string>
     <string name="button3">3</string>
@@ -17,4 +17,8 @@
     <string name="buttonPt">.</string>
     <string name="buttonC">C</string>
     <string name="buttonEq">=</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="light_theme">Light Theme</string>
+    <string name="settings">Settings</string>
+    <string name="change_theme">Change theme</string>
 </resources>

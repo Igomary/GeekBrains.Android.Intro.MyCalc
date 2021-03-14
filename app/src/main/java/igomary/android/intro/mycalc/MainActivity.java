@@ -1,10 +1,18 @@
 package igomary.android.intro.mycalc;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,23 +22,106 @@ public class MainActivity extends AppCompatActivity {
             {R.id.button_0, R.id.button_1, R.id.button_2, R.id.button_3, R.id.button_4, R.id.button_5, R.id.button_6, R.id.button_7, R.id.button_8, R.id.button_9};
     private TextView mTextView;
     private final String PLUS = "Plus";
+    private final static String DARK = "DarkTheme";
+    private final static String LIGHT = "LightTheme";
     private final static String keyCalculator = "Calculator";
-    private Calculator calculator = new Calculator();
+    private Calculator calculator;
+    private int mThemeMode;
+    SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPreferences= getSharedPreferences("Theme",MODE_PRIVATE);
+
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+
         mTextView = findViewById(R.id.textView);
         if (savedInstanceState != null) {
             calculator = savedInstanceState.getParcelable(keyCalculator);
             mTextView.setText(calculator.getText());
+            mThemeMode = calculator.getLightNightMode();
+        } else{
+            calculator = new Calculator();
         }
         Log.e(keyCalculator, ""+savedInstanceState);
 
-
         setNumericOnClickListener();
         setNonNumericOnClickListener();
+    }
+
+
+    private void setDark() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        mThemeMode = 1;
+    }
+
+    private void setLight() {
+        mThemeMode = 0;
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    }
+
+    private int checkTheme(Menu menu) {
+        MenuItem dark = menu.findItem(R.id.dark);
+        MenuItem light = menu.findItem(R.id.light);
+
+        String theme = sharedPreferences.getString("ThemeName", LIGHT);
+        if (theme.equalsIgnoreCase(DARK)){
+            dark.setChecked(true);
+            setDark();
+        } else{
+            light.setChecked(true);
+            setLight();
+        }
+
+        return mThemeMode;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.top_app_bar, menu);
+        mThemeMode = checkTheme(menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.dark:
+                setDark();
+                setTheme(DARK,1);
+                return true;
+            case R.id.light:
+                setLight();
+                setTheme(LIGHT,0);
+                if (item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
+                return true;
+            case R.id.settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivityForResult(intent,RESULT_OK);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void setTheme (String name, int n) {
+        mThemeMode = n;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("ThemeName", name);
+        editor.apply();
+        recreate();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -159,5 +250,4 @@ public class MainActivity extends AppCompatActivity {
         mTextView.setText("");
         calculator.setText("");
     }
-
 }
