@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         } else{
             calculator = new Calculator();
         }
-        Log.e(keyCalculator, ""+savedInstanceState);
 
         setNumericOnClickListener();
         setNonNumericOnClickListener();
