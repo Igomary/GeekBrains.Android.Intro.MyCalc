@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="button_text">40sp</dimen>
-    <dimen name="button_text_landscape">25sp</dimen>
     <dimen name="text_text">50sp</dimen>
-    <dimen name="text_text_landscape">30sp</dimen>
 </resources>
