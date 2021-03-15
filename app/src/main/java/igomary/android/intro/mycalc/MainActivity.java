@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setTheme (String name, int n) {
         mThemeMode = n;
+        calculator.setLightNightMode(mThemeMode);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("ThemeName", name);
         editor.apply();
@@ -154,9 +155,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setNonNumericOnClickListener() {
         findViewById(R.id.button_plus).setOnClickListener(v -> {
-            Log.e(PLUS, "плюс нажали");
+            Log.d(PLUS, "плюс нажали");
             if (!calculator.ismIsCounted()) {
-                Log.e(PLUS, "isCounted = false");
+                Log.d(PLUS, "isCounted = false");
                 readFirst();
             } else {
                 readSecond();
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_minus).setOnClickListener(v -> {
             if (!calculator.ismErr()) {
                 if (!calculator.ismIsCounted()) {
-                    Log.e(PLUS, "isCounted = false");
+                    Log.d(PLUS, "isCounted = false");
                     readFirst();
                 } else {
                     readSecond();
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_mult).setOnClickListener(v -> {
             if (!calculator.ismErr()) {
                 if (!calculator.ismIsCounted()) {
-                    Log.e(PLUS, "isCounted = false");
+                    Log.d(PLUS, "isCounted = false");
                     readFirst();
                 } else {
                     readSecond();
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_dev).setOnClickListener(v -> {
             if (!calculator.ismErr()) {
                 if (!calculator.ismIsCounted()) {
-                    Log.e(PLUS, "isCounted = false");
+                    Log.d(PLUS, "isCounted = false");
                     readFirst();
                 } else {
                     readSecond();

@@ -70,7 +70,7 @@ public class Calculator implements Parcelable {
         this.mOperation = mOperation;
         mLastDot = false;
         mLastNumeric = false;
-        Log.e(RESULT, Boolean.toString(mLastNumeric));
+        Log.d(RESULT, Boolean.toString(mLastNumeric));
     }
 
     public String count() {
@@ -78,42 +78,42 @@ public class Calculator implements Parcelable {
         mIsCounted = false;
         switch (mOperation) {
             case 0:
-                Log.e(NUMERO, "складываем с первым " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "складываем с первым " + Double.toString(mFirstNum));
                 mResult = mFirstNum + mSecondNum;
                 break;
             case 1:
-                Log.e(NUMERO, "вычитаем из первого " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "вычитаем из первого " + Double.toString(mFirstNum));
                 mResult = mFirstNum - mSecondNum;
                 break;
             case 2:
-                Log.e(NUMERO, "умножаем на первое " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "умножаем на первое " + Double.toString(mFirstNum));
                 mResult = mFirstNum * mSecondNum;
                 break;
             case 3:
-                Log.e(NUMERO, "делим первое " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "делим первое " + Double.toString(mFirstNum));
                 if (Double.compare(mSecondNum, 0.0) == 0) {
                     mErr = true;
-                    Log.e(NUMERO, "деление на 0");
+                    Log.d(NUMERO, "деление на 0");
                     return devZeroErr();
                 }
                 mResult = mFirstNum / mSecondNum;
                 break;
         }
-        Log.e(RESULT, "результат: " + Double.toString(mResult));
+        Log.d(RESULT, "результат: " + Double.toString(mResult));
         String string;
-        if (mResult % 1 == 0) {
+        if (mResult < Integer.MAX_VALUE && mResult % 1 == 0) {
             string = Integer.toString((int) mResult);
         } else {
             string = Double.toString(mResult);
         }
-        Log.e(RESULT, "результат после обработки: " + string);
+        Log.d(RESULT, "результат после обработки: " + string);
         mText = string;
         return string;
     }
 
     public void setmFirstNum(double mFirstNum) {
         this.mFirstNum = mFirstNum;
-        Log.e(NUMERO, "first: " + Double.toString(mFirstNum));
+        Log.d(NUMERO, "first: " + Double.toString(mFirstNum));
         mIsCounted = true;
     }
 
@@ -143,7 +143,7 @@ public class Calculator implements Parcelable {
 
     public void setmSecondNum(double mSecondNum) {
         this.mSecondNum = mSecondNum;
-        Log.e(NUMERO, "second: " + Double.toString(mSecondNum));
+        Log.d(NUMERO, "second: " + Double.toString(mSecondNum));
     }
 
     private String devZeroErr() {
