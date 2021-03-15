@@ -3,7 +3,6 @@ package igomary.android.intro.mycalc;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 public class MainActivity extends AppCompatActivity {
     private final int[] mNumButtons =
             {R.id.button_0, R.id.button_1, R.id.button_2, R.id.button_3, R.id.button_4, R.id.button_5, R.id.button_6, R.id.button_7, R.id.button_8, R.id.button_9};
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private final static String LIGHT = "LightTheme";
     private final static String keyCalculator = "Calculator";
     private Calculator calculator;
-    private int mThemeMode;
+    private boolean mThemeMode; // false - night, tue - light
     SharedPreferences sharedPreferences;
 
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             calculator = savedInstanceState.getParcelable(keyCalculator);
             mTextView.setText(calculator.getText());
-            mThemeMode = calculator.getLightNightMode();
+            mThemeMode = calculator.isLightNightMode();
         } else{
             calculator = new Calculator();
         }
@@ -54,31 +54,18 @@ public class MainActivity extends AppCompatActivity {
         setNonNumericOnClickListener();
     }
 
-
-    private void setDark() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        mThemeMode = 1;
-    }
-
-    private void setLight() {
-        mThemeMode = 0;
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-    }
-
-    private int checkTheme(Menu menu) {
+    private boolean checkTheme(Menu menu) {
         MenuItem dark = menu.findItem(R.id.dark);
         MenuItem light = menu.findItem(R.id.light);
 
         String theme = sharedPreferences.getString("ThemeName", LIGHT);
         if (theme.equalsIgnoreCase(DARK)){
             dark.setChecked(true);
-            setDark();
+            return ThemeUtils.setDark();
         } else{
             light.setChecked(true);
-            setLight();
+            return ThemeUtils.setLight();
         }
-
-        return mThemeMode;
     }
 
     @Override
@@ -92,12 +79,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.dark:
-                setDark();
-                setTheme(DARK,1);
+                setTheme(DARK,ThemeUtils.setDark());
                 return true;
             case R.id.light:
-                setLight();
-                setTheme(LIGHT,0);
+                setTheme(LIGHT,ThemeUtils.setDark());
                 if (item.isChecked()) item.setChecked(false);
                 else item.setChecked(true);
                 return true;
@@ -110,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setTheme (String name, int n) {
-        mThemeMode = n;
+    public void setTheme (String name, boolean isLight) {
+        mThemeMode = isLight;
         calculator.setLightNightMode(mThemeMode);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("ThemeName", name);

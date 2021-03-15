@@ -14,7 +14,7 @@ public class Calculator implements Parcelable {
     private double mResult;
     private String mText;
     private int mOperation; // 0 - сложение, 1- вычитание, 2 - умножение, 3 - деление
-    private int mLightNightMode; //0 -light, 1 - night
+    private boolean mLightNightMode; // false - night, true - light
     private final String PLUS = "Plus"; // все что ниже - для дебага
     private final String RESULT = "Result";
     private final String NUMERO = "Ввели число";
@@ -35,7 +35,7 @@ public class Calculator implements Parcelable {
         mResult = in.readDouble();
         mText = in.readString();
         mOperation = in.readInt();
-        mLightNightMode = in.readInt();
+        mLightNightMode = in.readByte()!= 0;
     }
 
     public static final Creator<Calculator> CREATOR = new Creator<Calculator>() {
@@ -158,11 +158,11 @@ public class Calculator implements Parcelable {
         return 0;
     }
 
-    public int getLightNightMode() {
+    public boolean isLightNightMode() {
         return mLightNightMode;
     }
 
-    public void setLightNightMode(int mLightNightMode) {
+    public void setLightNightMode(boolean mLightNightMode) {
         this.mLightNightMode = mLightNightMode;
     }
 
@@ -177,6 +177,6 @@ public class Calculator implements Parcelable {
         dest.writeDouble(mResult);
         dest.writeString(mText);
         dest.writeInt(mOperation);
-        dest.writeInt(mLightNightMode);
+        dest.writeByte((byte) (mLightNightMode? 1 : 0));
     }
 }

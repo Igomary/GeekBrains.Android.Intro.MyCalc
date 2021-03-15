@@ -3,17 +3,11 @@ package igomary.android.intro.mycalc;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-
-import com.google.android.material.internal.ThemeEnforcement;
 
 public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
@@ -47,9 +41,9 @@ public class SettingsActivity extends AppCompatActivity {
     private void checkTheme() {
         String theme = sharedPreferences.getString("ThemeName", LIGHT);
         if (theme.equalsIgnoreCase(DARK)){
-            setDark();
+            themeFlag = ThemeUtils.setDark();
         } else{
-            setLight();
+            themeFlag = ThemeUtils.setLight();
         }
     }
 
@@ -58,16 +52,6 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putString("ThemeName", name);
         editor.apply();
         recreate();
-    }
-
-    private void setDark() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        themeFlag = false;
-    }
-
-    private void setLight() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        themeFlag = true;
     }
 
     @Override
