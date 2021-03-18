@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-
 public class Calculator implements Parcelable {
     private boolean mLastNumeric; //флаг введено ли последним число
     private boolean mLastDot;       //ставили ли точку в числе
@@ -15,6 +14,7 @@ public class Calculator implements Parcelable {
     private double mResult;
     private String mText;
     private int mOperation; // 0 - сложение, 1- вычитание, 2 - умножение, 3 - деление
+    private boolean mLightNightMode; // false - night, true - light
     private final String PLUS = "Plus"; // все что ниже - для дебага
     private final String RESULT = "Result";
     private final String NUMERO = "Ввели число";
@@ -35,6 +35,7 @@ public class Calculator implements Parcelable {
         mResult = in.readDouble();
         mText = in.readString();
         mOperation = in.readInt();
+        mLightNightMode = in.readByte()!= 0;
     }
 
     public static final Creator<Calculator> CREATOR = new Creator<Calculator>() {
@@ -69,7 +70,7 @@ public class Calculator implements Parcelable {
         this.mOperation = mOperation;
         mLastDot = false;
         mLastNumeric = false;
-        Log.e(RESULT, Boolean.toString(mLastNumeric));
+        Log.d(RESULT, Boolean.toString(mLastNumeric));
     }
 
     public String count() {
@@ -77,42 +78,42 @@ public class Calculator implements Parcelable {
         mIsCounted = false;
         switch (mOperation) {
             case 0:
-                Log.e(NUMERO, "складываем с первым " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "складываем с первым " + Double.toString(mFirstNum));
                 mResult = mFirstNum + mSecondNum;
                 break;
             case 1:
-                Log.e(NUMERO, "вычитаем из первого " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "вычитаем из первого " + Double.toString(mFirstNum));
                 mResult = mFirstNum - mSecondNum;
                 break;
             case 2:
-                Log.e(NUMERO, "умножаем на первое " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "умножаем на первое " + Double.toString(mFirstNum));
                 mResult = mFirstNum * mSecondNum;
                 break;
             case 3:
-                Log.e(NUMERO, "делим первое " + Double.toString(mFirstNum));
+                Log.d(NUMERO, "делим первое " + Double.toString(mFirstNum));
                 if (Double.compare(mSecondNum, 0.0) == 0) {
                     mErr = true;
-                    Log.e(NUMERO, "деление на 0");
+                    Log.d(NUMERO, "деление на 0");
                     return devZeroErr();
                 }
                 mResult = mFirstNum / mSecondNum;
                 break;
         }
-        Log.e(RESULT, "результат: " + Double.toString(mResult));
+        Log.d(RESULT, "результат: " + Double.toString(mResult));
         String string;
-        if (mResult % 1 == 0) {
+        if (mResult < Integer.MAX_VALUE && mResult % 1 == 0) {
             string = Integer.toString((int) mResult);
         } else {
             string = Double.toString(mResult);
         }
-        Log.e(RESULT, "результат после обработки: " + string);
+        Log.d(RESULT, "результат после обработки: " + string);
         mText = string;
         return string;
     }
 
     public void setmFirstNum(double mFirstNum) {
         this.mFirstNum = mFirstNum;
-        Log.e(NUMERO, "first: " + Double.toString(mFirstNum));
+        Log.d(NUMERO, "first: " + Double.toString(mFirstNum));
         mIsCounted = true;
     }
 
@@ -142,7 +143,7 @@ public class Calculator implements Parcelable {
 
     public void setmSecondNum(double mSecondNum) {
         this.mSecondNum = mSecondNum;
-        Log.e(NUMERO, "second: " + Double.toString(mSecondNum));
+        Log.d(NUMERO, "second: " + Double.toString(mSecondNum));
     }
 
     private String devZeroErr() {
@@ -157,6 +158,14 @@ public class Calculator implements Parcelable {
         return 0;
     }
 
+    public boolean isLightNightMode() {
+        return mLightNightMode;
+    }
+
+    public void setLightNightMode(boolean mLightNightMode) {
+        this.mLightNightMode = mLightNightMode;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (mLastNumeric ? 1 : 0));
@@ -168,5 +177,6 @@ public class Calculator implements Parcelable {
         dest.writeDouble(mResult);
         dest.writeString(mText);
         dest.writeInt(mOperation);
+        dest.writeByte((byte) (mLightNightMode? 1 : 0));
     }
 }
